@@ -18,8 +18,8 @@ float[][] satf = new float[9][125];
 float[][] brightf = new float[9][125];
 float[][] opacityf = new float[9][125];
 
-
-
+float[]votos = new float[9]; 
+float[]lista_fim = new float[9]; 
 //float[][] x1, float[][] y1, float[][] x2, float[][] y2, float[][] x3, float[][] y3, float[][] huef, float[][] satf, float[][] brightf, float[][] opacityf 
 //float[][] x1, float[][] y1, float[][] x2, float[][] y2, float[][] x3, float[][] y3, float[][] huef, float[][] satf, float[][] brightf, float[][] opacityf 
 
@@ -31,13 +31,13 @@ int j = 0;
 
 // tira a media de uma lista
 float med (float[] lista){
-  int k, a;
+  int d = 1, a;
   float somat = 0, med;
-  k = lista.length;
-  for (a = 0; a < k; a = a + 1){
+  for (a = 1; a < lista.length && lista[a] > -9000; a = a + 1){
     somat = somat + lista[a]; 
+    d = d + 1;
   }
-  med = somat/k;
+  med = somat/d;
   
   return med;
 }
@@ -143,7 +143,7 @@ int sorteio (float []lista){
          p = 1;
        }
    }
-   
+
   return r;
 }
 
@@ -156,7 +156,8 @@ float [][] child (float[]px1, float[]py1, float[] px2, float[]py2, float[]px3, f
 float[]mx1, float[]my1, float[] mx2, float[]my2, float[]mx3, float[] my3, float[] mhuef, float[]msatf, float[] mbrightf, float[] mopacityf){
   
     float child [][] = new float [10][125];  
-    int k;
+    float k, y,
+    mutacao;
     float[] cx1 = new float[125];
     float[] cy1 = new float[125];
     float[] cx2 = new float[125];
@@ -170,8 +171,8 @@ float[]mx1, float[]my1, float[] mx2, float[]my2, float[]mx3, float[] my3, float[
 
     for (int i = 0; i < 125; i = i + 1){
       //A criança recebe cada círculo ou inteiramente da mãe ou inteiramente do pai
-      k = int(random (2));
-      if (k == 0) {
+      k = random (2.2);
+      if (k < 1) {  
         cx1[i] = px1[i];
         cy1[i] = py1[i];
         cx2[i] = px2[i];
@@ -183,7 +184,7 @@ float[]mx1, float[]my1, float[] mx2, float[]my2, float[]mx3, float[] my3, float[
         cbrightf[i] = pbrightf [i];
         copacityf[i] = popacityf[i];
       }
-      else {
+      else if (k > 1 && k < 2){
         cx1[i] = mx1[i];
         cy1[i] = my1[i];
         cx2[i] = mx2[i];
@@ -194,9 +195,69 @@ float[]mx1, float[]my1, float[] mx2, float[]my2, float[]mx3, float[] my3, float[
         csatf[i] = msatf [i];
         cbrightf[i] = mbrightf [i];
         copacityf[i] = mopacityf[i]; 
-      } 
+      }
+      else {
+        //acrecentar novas caracteristicas
+        cx1[i] = random(900) - 90;
+        cy1[i] = random(900) - 90;
+        cx2[i] = random(900) - 90;
+        cy2[i] = random(900) - 90;
+        cx3[i] = random(900) - 90;
+        cy3[i] = random(900) - 90;
+        chuef[i] = random(360);
+        csatf[i] = random(360);
+        if (csatf[i] > 15 && csatf[i] < 40) csatf[i] = csatf[i] + 50;
+        cbrightf[i] = random(100);
+        copacityf[i] = random(100);
+        if (copacityf[i] < 25){
+          copacityf[i] = 0;
+          cx1[i] = -90900;
+          cy1[i] = -90900;
+          cx2[i] = -90900;
+          cy2[i] = -90900;
+          cx3[i] = -90900;
+          cy3[i] = -90900;
+          chuef [i] = -90900;
+          csatf [i] = -90900;
+          cbrightf [i] = -90900;  
+        }
+      }
+     
+     //mutacao
+     y = random(100);
+     if (y < 15){
+       mutacao = random(-10,10);
+       cx1[i] =+ mutacao;
+       mutacao = random(-10,10);
+       cy1[i]=+ mutacao;
+       mutacao = random(-10,10);
+       cx2[i]=+ mutacao;
+       mutacao = random(-10,10);
+       cy2[i]=+ mutacao;
+       mutacao = random(-10,10);
+       cx3[i]=+ mutacao;
+       mutacao = random(-10,10);
+       cy3[i]=+ mutacao;
+       mutacao = random(-5,5);
+       chuef [i]=+ mutacao;
+       if (chuef[i] > 360)
+         chuef[i] %= 360;
+       mutacao = random(-5,5);
+       csatf [i]=+ mutacao;
+       if (csatf[i] > 100)
+         csatf[i] %= 100;
+       mutacao = random(-5,5);
+       cbrightf [i]=+ mutacao;
+       if (cbrightf [i] > 100)
+         cbrightf [i] = 100;
+       mutacao = random(-5,5);
+       copacityf[i]=+ mutacao;
+       if (copacityf[i] > 100)
+         copacityf[i] = 100;
+     }      
+        
     }
-  
+    
     child[0] = cx1;
     child[1] = cy1;
     child[2] = cx2;
@@ -235,8 +296,20 @@ void setup() {
       if (satf[i][j] > 15 && satf[i][j] < 40) satf[i][j] = satf[i][j] + 50;
       brightf[i][j] = random(100);
       opacityf[i][j] = random(100);
-      if (opacityf[i][j] < 25) opacityf[i][j] = 0;
-    
+      if (opacityf[i][j] < 25) {
+        opacityf[i][j] = 0;
+        x1[i][j] = -90900;
+        y1[i][j] = -90900;
+        x2[i][j] = -90900;
+        y2[i][j] = -90900;
+        x3[i][j] = -90900;
+        y3[i][j] = -90900;
+        huef [i][j] = -90900;
+        satf [i][j] = -90900;
+        brightf [i][j] = -90900;  
+      }
+      
+      
       j = j + 1;
     }
     i = i + 1;
@@ -248,7 +321,7 @@ void setup() {
     i = 0;
     
     for (int k = 0; k < 9; k = k + 1)
-      votos[k] = random(100);
+      votos[k] = random (1000);
     
     while(i < 8){
       j = 0;
@@ -282,16 +355,31 @@ void setup() {
       i = i + 1;
     }
     
+    lista_fim = distancia_final(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf), votos); 
+    int pai, mae,
+    antpai = -1, antmae = -1;
+    //println (lista_fim);
     for (int i = 0; i < imagens ; i = i + 1){
-      int pai, mae;
       float filho [][] = new float [10][125]; 
       //pai = sorteio(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf));
-      pai = sorteio(distancia_final(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf), votos));
+      pai = antpai;
+      while (pai == antpai || pai == antmae){  
+        pai = sorteio(lista_fim);
+        //distancia_final(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf), votos)[pai] = 0.6*distancia_final(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf), votos)[pai];
+        lista_fim[pai] = 0.7*lista_fim[pai];
+      }
+      mae = pai;
+      
       //mae = sorteio(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf));
-      mae = sorteio(distancia_final(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf), votos));
+      while (mae == pai || mae == antpai || mae == antmae){
+        //mae = sorteio(distancia_final(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf), votos));
+        mae = sorteio(lista_fim);
+        lista_fim[pai] = 0.7*lista_fim[pai];
+      }
+      
       filho = child(x1[pai], y1[pai], x2[pai], y2[pai], x3[pai], y3[pai], huef[pai], satf[pai], brightf[pai], opacityf[pai],
         x1[mae], y1[mae], x2[mae], y2[mae], x3[mae], y3[mae], huef[mae], satf[mae], brightf[mae], opacityf[mae]);
-    
+  
       x1[i] = filho[0];
       y1[i] = filho[1];
       x2[i] = filho[2];
@@ -302,12 +390,18 @@ void setup() {
       satf [i] = filho[7];
       brightf [i] = filho[8];
       opacityf[i] = filho[9];
+      
+      antpai = pai;
+      antmae = mae;
+      
+      println (geracao + " pai = " + pai + " mae = " + mae);
+      
     }
+    
   }
   //Coloca a última imagem na janela
   image(triangulo[7], 0, 0);
 }
-
   /*//println (rank(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf)));
   println (sorteio(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf)));
   println (sorteio(distancia_quad (x1, y1, x2, y2, x3, y3, huef, satf, brightf, opacityf)));
